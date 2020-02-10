@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Clear canvas</title>
+</head>
+
+<body onload="init()">
+    <canvas id="myCanvas" width="1000" height="600"></canvas>
+</body>
+
+<script id="shaderVs" type="x-shader/x-vertex">
+    attribute vec4 a_Position;
+  void main(){
+    gl_Position = a_Position;
+    gl_PointSize = 10.0;
+  }
+</script>
+
+<script id="shaderFS" type="x-shader/x-fragment">
+  void main(){
+    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+  }
+</script>
+
+<script>
+    function init() {
+        var canvas = document.getElementById("myCanvas");// Obtenemos el canvas que hemos creado.
+        var gl = canvas.getContext("webgl"); // Creamos el contexto 3D
+        if (!gl) {
+            console.log("Failed to get the rendering context for WebGL");
+            return;
+        }
+
+        canvas.onmousedown = function(ev){
+          click(ev,gl,canvas);
+        };
+
+        gl.clearColor(0.0, 0.0, 0.0, 1.0); // Asignamos el color
+        gl.clear(gl.COLOR_BUFFER_BIT); // Lo pintamos;
+</script>
+</html>
