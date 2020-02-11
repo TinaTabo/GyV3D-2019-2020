@@ -84,6 +84,12 @@
         size_array.push(10);
         if (x < 0 && x > -0.7 && y > 0 && y < 0.7) {
           colors_array.push(color_rosa);
+        }else if (x > 0 && x < 0.7 && y > 0 && y < 0.7) {
+          colors_array.push(color_rojo);
+        }else if (x < 0 && x > -0.7 && y < 0 && y > -0.7) {
+          colors_array.push(color_azul);
+        }else{
+          colors_array.push(color_verde);
         }
       }
 
@@ -96,7 +102,7 @@
         // para cargar las coordenadas de los puntos.
         gl.vertexAttrib2fv(a_Position, position_array[i]); // Guardamos las coordenadas xyz en a_position.
         gl.vertexAttrib1f(a_Size, size_array[i]);
-        gl.uniform4fv...
+        gl.uniform4fv(u_FragColor, colors_array[i]);
         gl.drawArrays(gl.POINTS, 0, 1); // Representamos a_Position.
       }
     }
