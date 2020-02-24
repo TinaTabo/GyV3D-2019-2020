@@ -40,10 +40,6 @@
                           <!---Script Principal--->
   <!--------------------------------------------------------------------------->
   <script>
-    var x = 0.0;
-    var y = 0.0;
-    var scale = 1.0;
-    var rotation = 0.0;
     var gl;
     var n;
 
@@ -174,19 +170,55 @@
      return indices.length;
     }
 
+    var count = 0.0;
     function drawTransformations(){
       // Pintamos el canvas
       gl.clear(gl.COLOR_BUFFER_BIT);
-
-      // Calculamos las matrices de transformación para cada una de las transformaciones básicas.
-      var translated = mat4.fromTranslation(mat4.create(), [x, y, 0.0]);
-      
+      var position = Math.abs(Math.sin(count));
+      // Triangulo 1
+      var translated = mat4.fromTranslation(mat4.create(), [position, position, 0.0]);
       var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
-      gl.uniformMatrix4fv(uniformMatrix4fv, false, full);
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
+      // Dibujamos el rectangulo con las transformaciones correspondientes.
+      gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 0*2);
 
+      // Triangulo 2
+      var translated = mat4.fromTranslation(mat4.create(), [0.0, position, 0.0]);
+      var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
+      // Dibujamos el rectangulo con las transformaciones correspondientes.
+      gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 3*2);
+
+      // Triangulo 3
+      var translated = mat4.fromTranslation(mat4.create(), [-position, position, 0.0]);
+      var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
       // Dibujamos el rectangulo con las transformaciones correspondientes.
       gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 6*2);
 
+      // Triangulo 4
+      var translated = mat4.fromTranslation(mat4.create(), [-position, -position, 0.0]);
+      var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
+      // Dibujamos el rectangulo con las transformaciones correspondientes.
+      gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 9*2);
+
+      // Triangulo 5
+      var translated = mat4.fromTranslation(mat4.create(), [0.0, -position, 0.0]);
+      var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
+      // Dibujamos el rectangulo con las transformaciones correspondientes.
+      gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 12*2);
+
+      // Triangulo 6
+      var translated = mat4.fromTranslation(mat4.create(), [position, -position, 0.0]);
+      var uniformMatrix4fv = gl.getUniformLocation(gl.program, "u_Matrix");
+      gl.uniformMatrix4fv(uniformMatrix4fv, false, translated);
+      // Dibujamos el rectangulo con las transformaciones correspondientes.
+      gl.drawElements(gl.TRIANGLES, 3, gl.UNSIGNED_SHORT, 15*2);
+
+      count += 0.01;
+      requestAnimationFrame(drawTransformations);
     }
   </script>
 
