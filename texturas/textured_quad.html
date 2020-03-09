@@ -21,7 +21,7 @@
     uniform sampler2D u_Sampler;
     varying vec2 v_TexCoord;
     void main(void) {
-        gl_FragColor = texture2D(u_Sampler, v_TexCoord);
+        gl_FragColor = texture2D(u_Sampler, v_TexCoord); // donde esta la imagen y en las coordenadas donde las va a ir cargando.
     }
 </script>
 
@@ -79,6 +79,9 @@
         gl.uniform1i(fragmentSamplerUniform, unitNumber);
     }
 
+    // Pone el color de fondo como le hemos mandado, y dibuja:
+    // TRIANGLE_STRIP: formas que tenemos de pintar los triangulos de distintas maneras.
+    // Buscar en google: webgl TRIANGLE_STRIP.
     function drawScene(gl) {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -87,6 +90,9 @@
 
     function initVertexBuffers(gl) {
         // Vertices (x, y) and texture coordinates (s, t)
+        // cargamos en el mismo array el vertice y la textura que corresponde a cada vertice haciendo
+        // la correspondencia de los vertices de mi cuadrado con los vertices de mi imagen, es decir,
+        // relacionamos xy con ts.
         var verticesAndTextures = [
             -0.5, 0.5, 0.0, 1.0, // top-left image corner
             -0.5, -0.5, 0.0, 0.0, // bottom-left image corner
@@ -96,14 +102,20 @@
 
         gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesAndTextures), gl.STATIC_DRAW);
-
+        // Cargamos los vertices
         var vertexPositionAttribute = gl.getAttribLocation(gl.program, "a_Position");
         gl.enableVertexAttribArray(vertexPositionAttribute);
         gl.vertexAttribPointer(vertexPositionAttribute, 2, gl.FLOAT, false, 4 * 4, 0);
-
+        // cargamos las texturas.
         var vertexTextureAttribute = gl.getAttribLocation(gl.program, "a_TexCoord");
         gl.enableVertexAttribArray(vertexTextureAttribute);
         gl.vertexAttribPointer(vertexTextureAttribute, 2, gl.FLOAT, false, 4 * 4, 4 * 2);
+        // cada dato tiene 2 coordenadas. si tuviese un xyz tendría 3 coordenadas.
+        // 4*4 cuatro datos de tipo float.
+        // 4*0 empieza a leer desde el 0 dos componentes.
+        // 4*2 empieza a leer desde el 2 dos componentes.
+        // Las dos primeras componentes de cada array pertenecen al vertice y las dos siguientes
+        // a la textura.
     }
 
     function initShaders(gl, vs_source, fs_source) {

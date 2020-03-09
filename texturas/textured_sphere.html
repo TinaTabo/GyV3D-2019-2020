@@ -94,6 +94,9 @@
                     vertexesAndTextures.push(RADIUS * y);
                     vertexesAndTextures.push(RADIUS * z);
 
+                    // Calculamos donde se nos van cada una de las coordenadas u y v.
+                    // son las s y t.
+
                     var u = 1 - (j / LONGITUDE_BANDS);
                     var v = 1 - (i / LATITUDE_BANDS);
 
@@ -158,6 +161,7 @@
             };
         }
 
+        // La carga de la textura es SIEMPRE IGUAL.
         function loadTexture(gl, samplerUniform, image, unitNumber, flip) {
             // Flip the image's y axis
             gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip);

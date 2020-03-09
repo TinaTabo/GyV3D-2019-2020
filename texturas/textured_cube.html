@@ -24,6 +24,8 @@
     <script id="shaderFs" type="x-shader/x-fragment">
         precision highp float;
         precision mediump float;
+        // para un cubo si voy a poner la misma textura en las 6 caras SOLO la cargo 1 vez.
+        // no es necesario cargar una por cada cara.
         uniform sampler2D u_Sampler;
         varying vec2 v_TexCoord;
 
@@ -69,6 +71,7 @@
         }
 
         function initVertexShader(gl) {
+          // Le doy las coordenadas de los vertices y las coordenadas de textura.
             // Vertexes and texture coordinates
             var vertexesAndTextures = [
                 -0.5, -0.5, -0.5, 0.0, 0.0,
@@ -188,7 +191,8 @@
 
             // Draw
             gl.drawElements(gl.TRIANGLES, 6 * 2 * 3, gl.UNSIGNED_SHORT, 0);
-
+            // 6*2*3: numero de caras por numero de triangulos por cara por numero de vertices por triangulo.
+            
             // Call drawScene again in the next browser repaint
             count += 0.01;
             requestAnimationFrame(drawScene);

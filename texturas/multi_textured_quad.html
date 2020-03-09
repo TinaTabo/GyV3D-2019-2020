@@ -22,8 +22,12 @@
     uniform sampler2D u_Sampler1;
     varying vec2 v_TexCoord;
     void main(void) {
+        // tenemos que definir por separado cada una de las texturas que queramos añadir.
+        // void: significa que no le entra nada, es lo mismo que poner ().
         vec4 color0 = texture2D(u_Sampler0, v_TexCoord);
         vec4 color1 = texture2D(u_Sampler1, v_TexCoord);
+        // debo indicar que tipo de operación vamos ha hacer con las texturas.
+        // En este caso lo queremos mezclar por ello las multiplicamos.
         gl_FragColor = color0 * color1;
     }
 </script>
@@ -63,6 +67,8 @@
         image0.src = 'sky.jpg';
         var image1 = new Image();
         image1.src = 'circle.gif';
+        // Para cargar cada textura, debemos ir anidando las cargas y en la carga de la ultima
+        // llamamos a drawScene.
         image0.onload = function () {
             loadTexture(gl, "u_Sampler0", image0, 0, true);
             image1.onload = function () {
@@ -72,6 +78,8 @@
         };
     }
 
+    // Esta funcion es la misma que en la anterior, independientemente de las texturas que halla hace los mismo
+    // para todas.
     function loadTexture(gl, samplerUniform, image, unitNumber, flip) {
         // Flip the image's y axis
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, flip);

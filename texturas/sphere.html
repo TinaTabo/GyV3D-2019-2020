@@ -72,6 +72,7 @@
             gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
 
             // Draw
+            // LINE_STRIP: me dibuja lineas, si lo cambiamos por triangles vemos la esfera sólida.
             gl.drawElements(gl.LINE_STRIP, LATITUDE_BANDS * LONGITUDE_BANDS * 3 * 2, gl.UNSIGNED_SHORT, 0);
 
             // Call drawScene again in the next browser repaint
@@ -108,7 +109,7 @@
                 for (var j = 0; j < LONGITUDE_BANDS; j++) {
                     var first = i * (LONGITUDE_BANDS + 1) + j;
                     var second = first + LONGITUDE_BANDS + 1;
-
+                    // conexion de los indices de cada cuadradito.
                     indexes.push(first);
                     indexes.push(second);
                     indexes.push(first + 1);
