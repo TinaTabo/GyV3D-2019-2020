@@ -25,6 +25,8 @@
         vec3 normal = normalize(a_Normal - vec3(gl_Position));
         float nDotL = max(dot(u_LightDirection, normal), 0.0);
 
+        // la luz viene del infinito y crea sombras.
+        // como es vec3 se va a quedar con las 3 primeras componentes rgb(a_color.rgb)
         vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
         v_Color = vec4(diffuse, 1.0);
     }
@@ -100,6 +102,8 @@
       //  | |v7---|-|v4
       //  |/      |/
       //  v2------v3
+
+
       var vertices = new Float32Array([ // Coordinates
       0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, // v0-v1-v2-v3 front
       0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, // v0-v3-v4-v5 right
@@ -118,8 +122,10 @@
       1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0 // v4-v7-v6-v5 back
       ]);
 
+      // Aparecen las direcciones de los vertices.
+      // indican hacia donde apunta cada vertice. 4 por cada cara del cubo.
       var normals = new Float32Array([ // Normal
-      0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // v0-v1-v2-v3 front
+      0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, // v0-v1-v2-v3 front  // digo que los cuatro puntos tienen z positivo.
       1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, // v0-v3-v4-v5 right
       0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, // v0-v5-v6-v1 up
       -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, -1.0, 0.0, 0.0, // v1-v6-v7-v2 left
@@ -175,7 +181,7 @@
 
       // Write u_LightColor
       var lightColor = [ 1.0, 1.0, 1.0 ]; // white
-      var lightColorUniform = gl.getUniformLocation(gl.program, "u_LightColor");
+      var lightColorUniform = gl.getUniformLocation(gl.program, "u_LightColor"); // asignamos el color de la luz, en esta caso blanco.
       gl.uniform3fv(lightColorUniform, lightColor);
 
       // Write u_LightDirection
@@ -183,8 +189,8 @@
       var y = document.getElementById("y").value;
       var z = document.getElementById("z").value;
       var lightDirection = [ x, y, z ];
-      vec3.normalize(lightDirection, lightDirection);
-      var lightDirectionUniform = gl.getUniformLocation(gl.program, "u_LightDirection");
+      vec3.normalize(lightDirection, lightDirection); // normalizamos el vector.
+      var lightDirectionUniform = gl.getUniformLocation(gl.program, "u_LightDirection"); // asignamos la direccion a la variable
       gl.uniform3fv(lightDirectionUniform, lightDirection);
    }
 

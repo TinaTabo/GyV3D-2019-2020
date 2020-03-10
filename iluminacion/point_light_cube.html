@@ -26,7 +26,7 @@
         vec3 normal = normalize(a_Normal - vec3(gl_Position));
         float nDotL = max(dot(lightDirection, normal), 0.0);
 
-        vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;
+        vec3 diffuse = u_LightColor * a_Color.rgb * nDotL;  
         v_Color = vec4(diffuse, 1.0);
     }
 </script>
@@ -74,7 +74,7 @@
    function drawScene(gl, canvas) {
       // Clear
       gl.clear(gl.COLOR_BUFFER_BIT);
-      
+
       // Init projection
       initProjection(gl, canvas);
 

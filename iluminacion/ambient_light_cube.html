@@ -15,13 +15,14 @@
     uniform mat4 u_pMatrix;
     uniform mat4 u_vMatrix;
     uniform mat4 u_mvMatrix;
-	
+
     varying highp vec4 v_Color;
 
     void main(void) {
         vec4 vertexPosition = u_mvMatrix * a_Position;
         gl_Position = u_pMatrix * u_vMatrix * vertexPosition;
 
+        // la luz ambiente se multiplica por lo que tenga ese vertice (color, textura) y le modificará el color.
         vec3 ambient = u_AmbientLight * a_Color;
         v_Color = vec4(ambient, 1.0);
     }
