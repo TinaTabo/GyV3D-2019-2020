@@ -49,14 +49,14 @@
         var z = -3.0;
         var y = 0.0;
 
-        var abajo = [ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0]; // v1
-        //aqui habia unos numeros cambiados
-        var arriba = [ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; // v3
-        var der = [ 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0]; // v2
-        var izq = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0]; // v4
-        var orientacion = abajo;
-
-
+        // Definimos los diferentes arrays de la posicion de la textura,
+        // dependiendo del vertice que consideremos primero.
+        var o1 = [ 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0]; // v1
+        var o2 = [ 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0]; // v2
+        var o3 = [ 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]; // v3
+        var o4 = [ 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0]; // v4
+        var orientacion = o1; // inicializamos con una de las orientaciones, para que
+                              // se pinte el cubo en la primera carga.
 
         function init() {
             // Obtenemos el canvas que hemos creado.
@@ -104,22 +104,22 @@
                   case 37: // Girar arriba.
                     count_y += step;
                     count_x = 0.0;
-                    orientacion = abajo;
+                    orientacion = o1;
                   break;
                   case 39: // Girar abajo.
                     count_y -= step;
                     count_x = 0.0;
-                    orientacion = arriba;
+                    orientacion = o3;
                   break;
                   case 38: // Girar a la izquierda.
                     count_x -= step;
                     count_y = 0.0;
-                    orientacion = izq;
+                    orientacion = o4;
                   break;
                   case 40: // Girar a la derecha.
                     count_x += step;
                     count_y = 0.0;
-                    orientacion = der;
+                    orientacion = o2;
                   break;
                   case 33: // Subir cámara.
                     y += step;
@@ -136,12 +136,12 @@
           // Le doy las coordenadas de los vertices y las coordenadas de textura.
           // posicion vertice (x,y,z) - posicion de textura (t,s).
             var vertexesAndTextures = [
-                // Frontal.
-                -0.5, -0.5, -0.5, orientacion[0], orientacion[1], // 1 0
-                 0.5, -0.5, -0.5, orientacion[2], orientacion[3], // 1 1
-                 0.5,  0.5, -0.5, orientacion[4], orientacion[5], // 0 1
-                -0.5,  0.5, -0.5, orientacion[6], orientacion[7], // 0 0
-                // Trasera
+                // Frontal
+                -0.5, -0.5, -0.5, orientacion[0], orientacion[1],
+                 0.5, -0.5, -0.5, orientacion[2], orientacion[3],
+                 0.5,  0.5, -0.5, orientacion[4], orientacion[5],
+                -0.5,  0.5, -0.5, orientacion[6], orientacion[7],
+                // Trasera.
                 -0.5, -0.5, 0.5, orientacion[4], orientacion[5],
                  0.5, -0.5, 0.5, orientacion[6], orientacion[7],
                  0.5,  0.5, 0.5, orientacion[0], orientacion[1],
