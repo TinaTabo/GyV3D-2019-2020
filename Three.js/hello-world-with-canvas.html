@@ -4,38 +4,63 @@
 <head>
 <title>Three.js: Hello World with canvas</title>
 
+<!-- Incorporamos la libreria -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/103/three.min.js"></script>
 
 <script>
    function init() {
+      // Creamos la escena.
       var scene = new THREE.Scene();
+     // Utilizamos un canvas que hemos creado nosotros en el html, en vez de usar
+     // el canvas propio del html.
       var myCanvas = document.getElementById("myCanvas");
       var sceneWidth = myCanvas.width;
       var sceneHeight = myCanvas.height;
 
+      // Creamos la camara.
       var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
+      // Como desplazar la posicion de la camara.
+      // Todos los objetos tienen unas coordenadas y asi las podemos cambiar durante la programacion.
       camera.position.z = 5;
 
+      // Obtenemos de la libreria la geometria del cubo y le pasamos las medidas del
+      // cubo (ancho, largo y alto)
       var geometry = new THREE.BoxGeometry(2, 2, 2);
+      // Obtenemos el material a través de la función.
       var material = new THREE.MeshNormalMaterial();
+      // Malla poligonal que forma la figura a la que le pasamos una geometria y una
+      // textura.
       var mesh = new THREE.Mesh(geometry, material);
+      // Añadimos la malla a la escena.
       scene.add(mesh);
 
+      // Creamos el renderizador.
       var renderer = new THREE.WebGLRenderer({
          antialias : true,
+        // Le decimos al renderizador que use el canvas que hemos creado, en vez
+        // del suyo.
+        // Asocia al nuestro canvas el renderizador.
          canvas : myCanvas
       });
 
+      // Llamamos a la funcion para que haga la animacion.
       animate(mesh, renderer, scene, camera);
    }
 
+   // A esta funcion le pasamos la malla, el renderizador, la escena y la camara.
+   // Esta función la creamos nosotros, no existe antes.
    function animate(mesh, renderer, scene, camera) {
+     // Rotamos el cubo en el eje x y en el eje y.
       mesh.rotation.x += 0.01;
       mesh.rotation.y += 0.02;
 
+      // renderizamos la escena y la camara.
       renderer.render(scene, camera);
 
+      // Llamamos a la funcion que va pintado cada frame.
       requestAnimationFrame(function() {
+        // Dentro llamamos a la propia funcion animate para que cada vez que cambie
+        // se pinte como un bucle.
          animate(mesh, renderer, scene, camera);
       });
    }

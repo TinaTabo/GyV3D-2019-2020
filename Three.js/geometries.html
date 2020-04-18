@@ -12,6 +12,7 @@
       var scene = new THREE.Scene();
 
       // Renderer
+      // Con todo esto lo que hacemos es añadir un canvas por defecto
       var renderer = new THREE.WebGLRenderer();
       var sceneWidth = window.innerWidth;
       var sceneHeight = window.innerHeight;
@@ -19,25 +20,31 @@
       document.body.appendChild(renderer.domElement);
 
       // Axes helper
+      // Añadimos las lineas para que nos ayuden a a visualización.
       var axes = new THREE.AxesHelper(20);
       scene.add(axes);
 
       // Plane
+      // Añadimos un plano con una geometria y textura concretas.
       var planeGeometry = new THREE.PlaneGeometry(60, 20);
       var planeMaterial = new THREE.MeshBasicMaterial({
          color : 0xAAAAAA
       });
       var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
+      // Coloco el plano donde yo quiera.
       plane.rotation.x = -0.5 * Math.PI;
       plane.position.set(15, 0, 0);
-
+      // Añadimos el plano a la escena.
       scene.add(plane);
 
       // Cube
+      // Creo un cubo que, al igual que el plano, defino donde se coloca y lo añado
+      // a la escena.
       var cubeGeometry = new THREE.BoxGeometry(4, 4, 4);
       var cubeMaterial = new THREE.MeshBasicMaterial({
          color : 0xFF0000,
+         // esto permite que vea la estructura (lineas) de los objetos.
+         // si es false se ve solido el objeto en cuestion.
          wireframe : true
       });
       var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
@@ -47,6 +54,7 @@
       scene.add(cube);
 
       // Sphere
+      // Creo una esfera y la añado a la escena.
       var sphereGeometry = new THREE.SphereGeometry(4, 20, 20);
       var sphereMaterial = new THREE.MeshBasicMaterial({
          color : 0x7777FF,
@@ -59,12 +67,17 @@
       scene.add(sphere);
 
       // Camera
+      // Creo la camara y le digo lookAt para que apunte al centro de mi escena.
       var camera = new THREE.PerspectiveCamera(90, sceneWidth / sceneHeight, 0.01, 100);
       camera.position.set(-20, 20, 20);
       camera.lookAt(scene.position);
-      
+
       // Render
+      // Renderizo la escena.
       renderer.render(scene, camera);
+
+      // Como no tiene ningun tipo de animacion no necesito repintar los frames,
+      // solo tiene uno.
    }
 </script>
 </head>
