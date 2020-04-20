@@ -22,11 +22,14 @@
        var start = false;
        var counterCPU = 0;
        var counterUser = 0;
+       var counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
 
        // Función que será llamada desde el body html y que cargará el juego.
        function init() {
           // Creamos la escena.
           var scene = new THREE.Scene();
+          scene.background = new THREE.Color( 0xcce0ff);
+          scene.fog = new THREE.Fog( 0xcce0ff, 500, 10000);
 
           // Como canvas vamos a utilizar el propio de html.
           var sceneWidth = window.innerWidth;
@@ -78,6 +81,7 @@
 
           // Llamamos a la funcion para que haga la animacion.
           animate(sphere, borders, renderer, scene, camera);
+          getCounter(scene, 'counter');
        }
 
        // A esta funcion le pasamos la malla, el renderizador, la escena y la camara.
@@ -87,8 +91,7 @@
           ballControl(sphere);
           cpuControl(sphere, borders);
           userControl(sphere, borders);
-          Counter(sphere);
-
+          Counter(sphere, scene);
           renderer.render(scene, camera);
 
           requestAnimationFrame(function() {
@@ -240,7 +243,7 @@
          }
        }
 
-       // Función que detecta las colisiones de la bola con los bordes.
+       // Función que detecta las colisiones de la bola con los bordes y cambia el sentido de la bola.
        function checkCollision(sphere, borders) {
           var originPosition = sphere.position.clone();
 
@@ -264,7 +267,7 @@
        }
 
        //----- CREAMOS LA FUNCION QUE CONTROLA EL MARCADOR -------//
-       function Counter(sphere) {
+       function Counter(sphere, scene) {
          if (sphere.position.y > 10) {
            // El juego deja de funcionar.
            start = false;
@@ -276,6 +279,8 @@
            console.log(counterUser);
            console.log(counterCPU);
            stepY = -stepY;
+           counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
+           getCounter(scene, 'counter');
          }
          if (sphere.position.y < -10) {
            // El juego deja de funcionar.
@@ -288,19 +293,57 @@
            console.log(counterUser);
            console.log(counterCPU);
            stepY = -stepY;
+           counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
+           getCounter(scene, 'counter');
          }
          if ((counterUser || counterCPU) == 5) {
              start = false;
              if (counterUser == 5) {
                document.getElementById("notification").innerHTML = ('User wins. Pulsa espacio para empezar de nuevo');
+               counterUser = 0;
+               counterCPU = 0;
+               counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
+               getCounter(scene, 'counter');
              }
              if (counterCPU == 5) {
                document.getElementById("notification").innerHTML = ('CPU wins. Pulsa espacio para empezar de nuevo');
+               counterUser = 0;
+               counterCPU = 0;
+               counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
+               getCounter(scene, 'counter');
              }
-             counterUser = 0;
-             counterCPU = 0;
          }
-         document.getElementById("score").innerHTML = (counterUser + '-' + counterCPU);
+       }
+
+       // Funcion que añade el contador 3D.
+       function getCounter(scene, name) {
+         var loader = new THREE.FontLoader();
+
+         loader.load( 'Gobold Bold Italic_Italic.json', function ( font ) {
+            var selectedObject = scene.getObjectByName(name);
+            if (selectedObject) {
+              scene.remove(selectedObject);
+            }
+            var geometry = new THREE.TextGeometry( counter, {
+            	font: font,
+            	size: 3,
+            	height: 0.5,
+          		curveSegments: 12,
+          		bevelEnabled: false,
+          		bevelThickness: 0.1,
+          		bevelSize: 0.1,
+          		bevelOffset: 0,
+          		bevelSegments: 0.1
+          	});
+
+            var texture = new THREE.TextureLoader().load("letras.jpg");
+            var material = getMaterial(texture);
+            counterMesh = new THREE.Mesh(geometry, material);
+            counterMesh.name = name;
+            counterMesh.position.set(-14, 20, 0);
+            counterMesh.rotation.x = -5;
+            scene.add(counterMesh);
+        });
        }
 
     </script>
@@ -336,9 +379,6 @@
       <span class="checkmark"></span>
     </label>
 
-
-    <h1 class="color1"> USER <span class="color2">-</span> <span class="color3"> CPU </span></h1>
-    <h1 class="color4" id="score"> 0 - 0 </h1>
     <h2 id="notification"></h2>
   </body>
 
