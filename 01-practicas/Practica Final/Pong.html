@@ -23,6 +23,8 @@
        var counterCPU = 0;
        var counterUser = 0;
        var counter = ('User: '+ counterUser + ' - CPU: ' + counterCPU);
+       var speed = 1;
+       var angle = 1;
 
        // Función que será llamada desde el body html y que cargará el juego.
        function init() {
@@ -200,8 +202,8 @@
        // Función que controla el movimiento de la esfera (Pelota).
        function ballControl(sphere) {
          if (start) {
-           sphere.position.x -= stepX;
-           sphere.position.y -= stepY;
+           sphere.position.x -= stepX * angle * speed;
+           sphere.position.y -= stepY * speed;
          }
        }
 
@@ -245,6 +247,13 @@
 
        // Función que detecta las colisiones de la bola con los bordes y cambia el sentido de la bola.
        function checkCollision(sphere, borders) {
+          var cpuBorder = borders[3];
+          var userBorder = borders[2];
+          var LastPositionCPU = 1;
+          var ActualPositionCPU = 1;
+          var LastPositionUser = 1;
+          var ActualPositionUser = 1;
+          var ActualPositionSphere = 1;
           var originPosition = sphere.position.clone();
 
           for (var i = 0; i < sphere.geometry.vertices.length; i++) {
@@ -258,8 +267,33 @@
                 if (collisionResults[0].object.name == "left" || collisionResults[0].object.name == "right") {
                    stepX *= -1;
                 }
-                if (collisionResults[0].object.name == "down" || collisionResults[0].object.name == "top") {
-                   stepY *= -1;
+                if (collisionResults[0].object.name == "down"){
+                   stepY *= -1; // NO SE TOCA!! ESTO SOLO CAMBIA EL SENTIDO.
+                   LastPositionCPU = cpuBorder.position.x;
+                   ActualPositionUser = userBorder.position.x;
+                   ActualPositionSphere = sphere.position.x;
+                   speed = Math.abs(ActualPositionUser - LastPositionUser);
+                   if (speed >= 2.0 || speed <= 1.0) {
+                     speed = 0.85;
+                   }
+                   angle = Math.abs(ActualPositionUser - ActualPositionSphere);
+                   if (angle >= 5.0 || angle <= 1.0) {
+                     angle = 1.0;
+                   }
+                }
+                if (collisionResults[0].object.name == "top") {
+                  stepY *= -1; // NO SE TOCA!! ESTO SOLO CAMBIA EL SENTIDO.
+                  LastPositionUser = userBorder.position.x;
+                  ActualPositionCPU = cpuBorder.position.x;
+                  ActualPositionSphere = sphere.position.x;
+                  speed = Math.abs(ActualPositionCPU - LastPositionCPU);
+                  if (speed >= 1.5 || speed <= 1.0) {
+                    speed = 0.85;
+                  }
+                  angle = Math.abs(ActualPositionCPU - ActualPositionSphere);
+                  if (angle >= 5.0 || angle <= 1.0) {
+                    angle = 2.5;
+                  }
                 }
                 break;
              }
