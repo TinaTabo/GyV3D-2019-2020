@@ -23,7 +23,9 @@
             gl_FragColor = v_Color;
         }
     </script>
-
+    <!--------------------------------------------------------------------------->
+                            <!---Script Principal--->
+    <!--------------------------------------------------------------------------->
     <script>
       var gl;
       var count = 0.0;
@@ -59,9 +61,13 @@
         drawScene();
 
         // Evento para realizar modificaciones en la vista con la rueda del raton.
-        // Event listener for mouse wheel
+        // Como solo tiene que modificar la x en el caso de que este selecionado la vision en
+        // perspectiva vemos el valor y lo condicionamos con un if.
+        var projectionValue = document.querySelector('input[name="projection"]:checked').value;
         document.addEventListener('wheel', function (event) {
-          z = event.wheelDelta > 0 ? z + 1 : z - 1;
+          if (projectionValue == 'perspective') {
+            z = event.wheelDelta > 0 ? z + 1 : z - 1;
+          }
         });
       }
 

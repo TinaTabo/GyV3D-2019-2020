@@ -1,6 +1,9 @@
-<!DOCTYPE>
 <!DOCTYPE html>
 <html>
+  <!-- Esta práctica pinta un rectangulo amarillo sobre un canvas negro al cual se
+       le pueden hacer una serie de transformaciones: mover(arriba, abajo, izq, der usando
+       las flechas), escalar(con las teclas re pag, av pag) y rotar(con las teclas inicio y fin)
+   -->
 
   <head>
     <meta charset="utf-8">
@@ -57,7 +60,7 @@
         console.log('Failed to intialize shaders.');
         return;
       }
-      // Escribimos la posicion de los verticen en el vertexShader
+      // Escribimos la posicion de los vertices en el vertexShader
       n = initVertexBuffers(gl);
       if (n < 0) {
         console.log('Failed to set the positions of the vertices.');

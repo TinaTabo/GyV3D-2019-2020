@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
-
+  <!-- Esta práctica pinta un canvas negro en el que al ir pulsandolo van apareciendo cuadraditos
+       de diferentes colores y tamaños dependiendo de la zona de este en la que toques -->
 <head>
-    <title>Clear canvas</title>
+    <title>Dibujar puntitos de colores</title>
 </head>
 
 <body onload="init()">
+    <!-- Creamos el canvas con un ancho y alto determinado medido en pixeles -->
     <canvas id="myCanvas" width="640" height="480"></canvas>
 </body>
 
+<!-- Los shaders son fragmentos de codigo que permite generar gráficos 3D -->
+
+<!-- En el vertex shader se describe la posición y tamaño de los elementos de una escena -->
 <script id="shaderVs" type="x-shader/x-vertex">
     attribute vec4 a_Position;
     attribute float a_Size;
@@ -18,6 +23,7 @@
   }
 </script>
 
+<!-- El fragment shader se ocupa del procesamiento de los vértices, color, iluminacion,... -->
 <script id="shaderFs" type="x-shader/x-fragment">
   precision mediump float; // definicion de la precision que la gpu requerirá para el calculo de valores en coma flotante.
   uniform vec4 u_FragColor;
@@ -25,7 +31,9 @@
     gl_FragColor = u_FragColor;
   }
 </script>
-
+<!--------------------------------------------------------------------------->
+                        <!---Script Principal--->
+<!--------------------------------------------------------------------------->
  <script>
 
    function init() {
@@ -39,7 +47,8 @@
        canvas.onmousedown = function(ev){
          click(ev, gl, canvas);
        };
-       // Leemos los shaders
+       // Obtenemos los shaders que hemos creado en html llamandolos por
+       // la etiqueta Id.
        var vs = document.getElementById('shaderVs').innerHTML;
        var fs = document.getElementById('shaderFs').innerHTML;
        if (!initShaders(gl, vs, fs)){

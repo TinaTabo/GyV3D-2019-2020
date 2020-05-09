@@ -39,10 +39,12 @@
             gl_FragColor = color0 * color1;
         }
     </script>
-
+    <!--------------------------------------------------------------------------->
+                            <!---Script Principal--->
+    <!--------------------------------------------------------------------------->
     <script>
         var gl;
-        var canvas; //Te lo pongo como variable para utilizarlo luego
+        var canvas; //Lo pongo como variable para utilizarlo luego
         var count = 0.0;
         var count_x = 0.0;
         var count_y = 0.0;
@@ -121,11 +123,11 @@
                     count_y = 0.0;
                     orientacion = o2;
                   break;
-                  case 33: // Subir cámara.
-                    y += step;
-                  break;
-                  case 34: // Bajar cámara.
+                  case 33: // Bajar cámara. (re pag)
                     y -= step;
+                  break;
+                  case 34: // Subir cámara. (av pag)
+                    y += step;
                   break;
                }
                initVertexShader(gl); //debes llamar a la funcion para mover texturas
