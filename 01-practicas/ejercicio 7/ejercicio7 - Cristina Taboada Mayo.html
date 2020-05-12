@@ -165,6 +165,11 @@
 
             var vertexPositionAttribute = gl.getAttribLocation(gl.program, "a_Position");
             gl.enableVertexAttribArray(vertexPositionAttribute);
+            // El 3, es porque son 3 componentes, x,y, z
+            // 4*(3+2), me dice que voy a coger 5 componentes (3 vertice y 2 textura) que ocupan 4bytes (saltos).
+            // Sabemos que son 4bytes(además sabemos que son 32 porque es un FLOAT),
+            // debido a que tenemos un buffer de 32 bits, y 1byte son 8 bits.
+            // El offset es donde vas a empezar a leer tu.En el primero es 0, porque empieza en 0(POSICION)
             gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 4 * (3 + 2), 0);
 
             var vertexColorAttribute = gl.getAttribLocation(gl.program, "a_TexCoord");

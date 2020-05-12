@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ejercicio 5</title>
+    <!--Libreria de JavaScript que nos permite utilizar glMatrix--->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+    <script id="shaderVs" type="x-shader/x-vertex">
+        attribute vec4 a_Position;
+        attribute vec3 a_Color;
+        uniform mat4 u_pMatrix; // Matriz de proyeccion
+        uniform mat4 u_vMatrix; // Matriz de vista.
+        uniform mat4 u_mvMatrix; // Matriz de transformación
+        varying highp vec4 v_Color;
+        void main() {
+            gl_Position = u_pMatrix * u_vMatrix * u_mvMatrix * a_Position;
+            v_Color = vec4(a_Color, 1.0);
+        }
+    </script>
+
+    <script id="shaderFs" type="x-shader/x-fragment">
+        varying highp vec4 v_Color;
+        void main() {
+            gl_FragColor = v_Color;
+        }
+    </script>
+    <!--------------------------------------------------------------------------->
+                            <!---Script Principal--->
+    <!--------------------------------------------------------------------------->
+    <script>
+      var gl;
+      var count = 0.0;
+      var z = -3;
+      var canvas;
+
+      function init() {
+        // Obtenemos el canvas que hemos creado.
+        canvas = document.getElementById("myCanvas");
+        // Creamos el contexto 3D
+        gl = canvas.getContext("webgl");
+        if (!gl) {
+            console.log("Failed to get the rendering context for WebGL");
+            return;
+        }
+        // Leemos los shaders
+        var vs = document.getElementById('shaderVs').innerHTML;
+        var fs = document.getElementById('shaderFs').innerHTML;
+        initShaders(gl, vs, fs);
+        // Inicializamos el vertexShader
+        initVertexShader(gl);
+
+        // Implementamos la matriz de proyeccion **NUEVO**
+        initProjection(gl, canvas);
+
+        // Asignamos el color al canvas
+        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+        // Forzamos la eliminación de las superficies ocultas para que el cubo sea sólido.
+        gl.enable(gl.DEPTH_TEST);
+
+        // Pintamos el canvas.
+        drawScene();
+
+        // Evento para realizar modificaciones en la vista con la rueda del raton.
+        // Como solo tiene que modificar la x en el caso de que este selecionado la vision en
+        // perspectiva vemos el valor y lo condicionamos con un if.
+        var projectionValue = document.querySelector('input[name="projection"]:checked').value;
+        document.addEventListener('wheel', function (event) {
+          if (projectionValue == 'perspective') {
+            z = event.wheelDelta > 0 ? z + 1 : z - 1;
+          }
+        });
+      }
+
+      // Inicializamos los Buffers.
+      // Definimos las posiciones de los vertices (x,y,z) en el mismo array
+      // que los colores (r,g,b) de cada vertice.
+      function initVertexShader(gl) {
+          var verticesycolores = [
+            // HEXAGONO TOP
+            0.0,  0.0,  0.5,   1.0, 0.0, 0.0, // Vertice 0 - Centro hexagono
+           -0.25, 0.5,  0.5,   0.0, 1.0, 1.0, // Vertice 1 - CIAN
+            0.25, 0.5,  0.5,   0.0, 1.0, 1.0, // Vertice 2
+            0.5,  0.0,  0.5,   1.0, 1.0, 0.0, // Vertice 3 - AMARILLO
+            0.25,-0.5,  0.5,   1.0, 1.0, 0.0, // Vertice 4
+           -0.25,-0.5,  0.5,   1.0, 0.0, 1.0, // Vertice 5 - MAGENTA
+           -0.5,  0.0,  0.5,   1.0, 0.0, 1.0, // Vertice 6
+           // HEXAGONO BOTTOM
+            0.0,  0.0, -0.5,   1.0, 0.0, 0.0, // Vertice 7 - Centro hexagono
+           -0.25, 0.5, -0.5,   0.0, 1.0, 1.0, // Vertice 8 - CIAN
+            0.25, 0.5, -0.5,   0.0, 1.0, 1.0, // Vertice 9
+            0.5,  0.0, -0.5,   1.0, 1.0, 0.0, // Vertice 10 - AMARILLO
+            0.25,-0.5, -0.5,   1.0, 1.0, 0.0, // Vertice 11
+           -0.25,-0.5, -0.5,   1.0, 0.0, 1.0, // Vertice 12 - MAGENTA
+           -0.5,  0.0, -0.5,   1.0, 0.0, 1.0, // Vertice 13
+          ];
+
+          // Creamos la matriz que relaciona los indices de cada vértices
+          // que contiene todos sus datos de posicion y color.
+
+          // OJO!!: En la funcion drawScene, en los buffers, hay que definir el numero de caras
+          // el numero de triangulos que formas las caras y el numero de vertices que tiene
+          // cada triangulo.
+          var indices = [
+            0, 1, 2,
+            0, 2, 3,
+            0, 3, 4,
+            0, 4, 5,
+            0, 5, 6,
+            0, 6, 1,
+
+            7, 8, 9,
+            7, 9, 10,
+            7, 10, 11,
+            7, 11, 12,
+            7, 12, 13,
+            7, 13, 8,
+
+            // Para conectar los laterales y se vea en el modo lineas correctamente
+            // el orden es importante. Debemos definir los triangulos de los laterales
+            // segun el orden de color de los vertices.
+
+            // Cyan
+            2, 1, 8,
+            2, 8, 9,
+            // Amarillo
+            4, 3, 10,
+            4, 10, 11,
+            // Magenta
+            6, 5, 12,
+            6, 12, 13,
+
+          ];
+
+          // Se crea el buffer gl.ARRAY_BUFFER con el contenido de los vertices y colores
+          gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verticesycolores), gl.STATIC_DRAW);
+          // Se pregunta a WebGL dónde están los datos.(Están en el codigo JS del vertex shader).
+          var vertexPositionAttribute = gl.getAttribLocation(gl.program, "a_Position");
+          gl.enableVertexAttribArray(vertexPositionAttribute);
+          // El desplazamiento en bytes de los vértices será 4*(3+3), donde 4 es el número
+          // de bytes de un gl.FLOAT y (3+3) es la posición (x, y, z, r, g, b)
+          gl.vertexAttribPointer(vertexPositionAttribute, 3, gl.FLOAT, false, 4 * (3 + 3), 0); // Coge los 3 primeros que son las posiciones de los vertices.
+          // En este caso size = 3 porque por cada vertice del cubo estan relacionados 3 vertices diferentes
+          // de las caras.
+
+          var vertexColorAttribute = gl.getAttribLocation(gl.program, "a_Color");
+          gl.enableVertexAttribArray(vertexColorAttribute);
+          gl.vertexAttribPointer(vertexColorAttribute, 3, gl.FLOAT, false, 4 * (3 + 3), 4 * 3); // Coge los 3 ultimos que son las posiciones de los colores.
+
+          // Escribimos los indices en el buffer: gl.ELEMENT_ARRAY_BUFFER
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
+          gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+      }
+
+      function drawScene() {
+          // Variables que leen el valor de los campos que podemos introducir por pantalla
+          // En este caso: si la rotacion esta o no activada, si queremos ver el cubo solido
+          // o por lineas (primitive hace esto)
+          var rotationChecked = document.querySelector('input[name="rotation"]:checked');
+          var primitiveValue = document.querySelector('input[name="primitive"]:checked').value;
+
+          // Inicializamos la proyección.
+          initProjection(gl, canvas);
+
+          // Pintamos el canvas
+          gl.clear(gl.COLOR_BUFFER_BIT);
+
+          // Realizamos una rotación en los 3 ejes.
+          // El if comprueba si la rotación esta activada o no.
+
+          // Funcion que sirve para cambiar grados a radianes.
+          // le das el angulo en grados y se encarga de ponerlo en radianes.
+          const gradosARadianes = deg => (deg * Math.PI) / 180.0;
+
+          if (rotationChecked){
+            //--- todo viene aqui : http://glmatrix.net/docs/module-mat4.html
+            //--- fromXRotation(out, rad)
+            var rotatedX = mat4.fromXRotation(mat4.create(),gradosARadianes(90));
+            //---rotateY(out, a, rad), siendo 'a' la matriz a rotar, en este caso es la anterior rotada en el eje X
+            var rotatedY = mat4.rotateY(mat4.create(),rotatedX, gradosARadianes(90)+gradosARadianes(45));
+            //----rotateZ(out, a, rad), siendo 'a' la matriz a rotar y los radianes el contador
+            var mvMatrix = mat4.rotateZ(mat4.create(), rotatedY, count);
+            var uMvMatrix = gl.getUniformLocation(gl.program, "u_mvMatrix");
+            gl.uniformMatrix4fv(uMvMatrix, false, mvMatrix);
+            //count += 0.01;
+            count -= 0.01; //-- PORQUE VA EN ESA DIRECCION GIRANDO
+          }
+          // Dibujamos el prisma. Es importante indicar el tamaño de los elementos a dibujar:
+          // en este caso son 2 caras, formadas por 6 triángulos los cuales tienen 3 vertices
+          // cada uno.
+          // También tenemos 3 laterales, formados por 2 triangulos los cuales tienen 3 vertices.
+
+          // También diferenciamos los dos tipos de "primitive": cubo solido, cubo de lineas con un if.
+          if (primitiveValue == 'triangles') {
+            gl.drawElements(gl.TRIANGLES,(2 * 6 * 3)+ (3 * 2 * 3) ,gl.UNSIGNED_SHORT, 0);
+          }else if (primitiveValue == 'lines') {
+              gl.drawElements(gl.LINES, (2 * 6 * 3)+ (3 * 2 * 3), gl.UNSIGNED_SHORT, 0);
+          }
+
+          // Llama a drawScene de nuevo en el próximo repintado del navegador.
+          requestAnimationFrame(drawScene);
+      }
+
+      function initProjection(gl, canvas) {
+        // Variable que lee el valor del campo que podemos introducir por pantalla
+        // En este caso: el tipo de proyeccion que queremos ver, ortogonal o prespectiva.
+          var projectionValue = document.querySelector('input[name="projection"]:checked').value;
+          // Escribimos la matriz de proyección
+          var pMatrixUniform = gl.getUniformLocation(gl.program, "u_pMatrix");
+          var ratio = canvas.width / canvas.height;
+
+          // Con un if especificamos los dos posibles tipos de proyeccion que puede tomar el cubo
+          // segun lo seleccionado por pantalla.
+          if (projectionValue == 'orthographic') {
+            // Calculamos la matriz de proyección usando mat4.ortho y se guardará en la var u_pMatrix.
+            var pMatrix = mat4.ortho(mat4.create(), -ratio, ratio, -1.0, 1.0, 5.0, -1.0);
+            var vMatrix = mat4.create(); // solo creamos la matriz identidad, no nos permite cambiar la vista con la rueda del raton.
+          }else if (projectionValue == 'perspective') {
+            // Calculamos la matriz de proyección usando mat4.perpective y se guardará en la var u_pMatrix.
+            var pMatrix = mat4.perspective(mat4.create(), 150, ratio, 0.1, 100);
+            var vMatrix = mat4.lookAt(mat4.create(), [0, 0, z], [0, 0, 0], [0, 1, 0]); // El valor de z varía con la función de la rueda del raton.
+          }
+
+          gl.uniformMatrix4fv(pMatrixUniform, false, pMatrix);
+
+          // Escribimos la matriz de vista.
+          var vMatrixUniform = gl.getUniformLocation(gl.program, "u_vMatrix");
+          gl.uniformMatrix4fv(vMatrixUniform, false, vMatrix);
+      }
+
+      function initShaders(gl, vs_source, fs_source) {
+          // Compilamos los shaders
+          var vertexShader = makeShader(gl, vs_source, gl.VERTEX_SHADER);
+          var fragmentShader = makeShader(gl, fs_source, gl.FRAGMENT_SHADER);
+
+          // Creamos el programa
+          var glProgram = gl.createProgram();
+
+          // Añadimos los dos shaders al programa
+          gl.attachShader(glProgram, vertexShader);
+          gl.attachShader(glProgram, fragmentShader);
+          // Los linkamos al programa.
+          gl.linkProgram(glProgram);
+
+          // Indicamos a JavaScript que utilice el programa.
+          gl.useProgram(glProgram);
+          gl.program = glProgram;
+      }
+
+      // Creamos la funcion makeShader
+      function makeShader(gl, src, type) {
+          var shader = gl.createShader(type); // Crea el shader del tipo (vertex/fragment)
+          gl.shaderSource(shader, src); // Linka el shader que hemos creado a la variable JS que contiene la función
+          gl.compileShader(shader); // Compila el shader creado y linkado.
+          if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+              alert("Error compiling shader: " + gl.getShaderInfoLog(shader));
+              return;
+          }
+          return shader;
+      }
+    </script>
+
+  </head>
+
+  <!--En el cuerpo se crea el canvas y se carga la funcion init--->
+  <body onload="init()">
+      <!--Creamos el canvas.--->
+      <canvas id="myCanvas" width="640" height="480"></canvas><br>
+      <!--Creamos el menú de opciones--->
+      <b>Rotation</b>
+      <input type="checkbox" name="rotation" checked>
+      <br>
+      <b>WebGL primitive</b>
+      <input type="radio" name="primitive" value="triangles" checked> Triangles
+      <input type="radio" name="primitive" value="lines"> Lines
+      <br>
+      <b>Projection type</b>
+      <input type="radio" name="projection" value="perspective" checked> Perspective
+      <input type="radio" name="projection" value="orthographic"> Orthographic
+      <br>
+  </body>
+</html>
